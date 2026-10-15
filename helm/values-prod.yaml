@@ -1,0 +1,25 @@
+# Production: HA settings. Promotions to prod are deliberate git commits.
+environment: prod
+replicaCount: 3
+
+image:
+  # Prod never floats on "latest": the promotion commit pins an exact tag.
+  tag: "v0.1.0"
+
+ingress:
+  enabled: true
+  host: orders.example.com
+  annotations:
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+env:
+  LOG_LEVEL: warning

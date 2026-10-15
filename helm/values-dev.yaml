@@ -1,0 +1,18 @@
+# Development: cheap, fast feedback. Ingress off; use port-forward.
+environment: dev
+replicaCount: 1
+
+image:
+  tag: "latest"
+
+ingress:
+  enabled: false
+
+autoscaling:
+  enabled: false
+
+podDisruptionBudget:
+  enabled: false
+
+env:
+  LOG_LEVEL: debug
