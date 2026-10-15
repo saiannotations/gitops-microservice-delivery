@@ -24,9 +24,16 @@ autoscaling:
   maxReplicas: 5
   targetCPUUtilizationPercentage: 70
 
-# NOTE: resources intentionally left unset in the first version of the chart.
-# Pods without limits risk OOMKills under load -- tracked as a repo issue.
-resources: {}
+# CPU/memory requests and limits. Requests tell the scheduler how much room
+# to reserve; limits stop one misbehaving pod from starving its neighbors.
+# Environments override these in their own values files.
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 podDisruptionBudget:
   enabled: true

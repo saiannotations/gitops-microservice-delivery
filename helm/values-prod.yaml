@@ -17,6 +17,14 @@ autoscaling:
   minReplicas: 3
   maxReplicas: 10
 
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
 podDisruptionBudget:
   enabled: true
   minAvailable: 2
