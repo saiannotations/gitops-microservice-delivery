@@ -3,8 +3,8 @@
 It is deliberately small: the interesting part of this repo is not the app,
 it is everything around the app (CI, Helm, GitOps, monitoring).
 """
-import random
 import time
+import uuid
 from typing import Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
@@ -14,7 +14,7 @@ app = FastAPI(title="orders-api", version="0.1.0")
 
 # In-memory store. A real service would use a database; for a platform demo
 # this keeps the focus on delivery instead of data plumbing.
-_orders: Dict[int, dict] = {}
+_orders: Dict[str, dict] = {}
 
 
 class OrderCreate(BaseModel):
@@ -24,16 +24,17 @@ class OrderCreate(BaseModel):
 
 
 class Order(OrderCreate):
-    id: int
+    id: str
     total: float
     status: str
     created_at: float
 
 
-def _next_id() -> int:
-    # NOTE: random IDs can collide, which once made a test flaky (see issue).
-    # Kept simple here on purpose; the fix is tracked in the repo history.
-    return random.randint(1, 100)
+def _next_id() -> str:
+    # UUIDs cannot collide in practice, so the "two orders, different IDs"
+    # test is deterministic now. (Fixes the flaky-test issue: random IDs
+    # in a small range collided every few hundred runs.)
+    return uuid.uuid4().hex
 
 
 @app.get("/health")
@@ -61,7 +62,7 @@ def list_orders() -> List[dict]:
 
 
 @app.get("/orders/{order_id}")
-def get_order(order_id: int) -> dict:
+def get_order(order_id: str) -> dict:
     order = _orders.get(order_id)
     if order is None:
         raise HTTPException(status_code=404, detail="order not found")
@@ -69,7 +70,7 @@ def get_order(order_id: int) -> dict:
 
 
 @app.patch("/orders/{order_id}/cancel")
-def cancel_order(order_id: int) -> dict:
+def cancel_order(order_id: str) -> dict:
     order = _orders.get(order_id)
     if order is None:
         raise HTTPException(status_code=404, detail="order not found")

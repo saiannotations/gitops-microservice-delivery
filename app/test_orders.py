@@ -43,7 +43,7 @@ def test_two_orders_get_different_ids():
 
 
 def test_get_missing_order_returns_404():
-    resp = client.get("/orders/999999")
+    resp = client.get("/orders/does-not-exist")
     assert resp.status_code == 404
 
 
