@@ -1,4 +1,4 @@
-orders-api has been deployed to the "{{ .Values.environment }}" environment.
+orders-api has been deployed to the "{{ .Values.environment | default "dev" }}" environment.
 
   Image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
   Replicas: {{ .Values.replicaCount }}

@@ -1,5 +1,6 @@
 # Default values for orders-api.
 # Environment-specific files (values-dev/staging/prod.yaml) override these.
+environment: dev  # default; overridden by values-dev/staging/prod.yaml
 replicaCount: 2
 
 image:
