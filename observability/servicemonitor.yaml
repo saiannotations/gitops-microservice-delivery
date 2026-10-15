@@ -1,0 +1,17 @@
+# Tells the Prometheus Operator to scrape metrics from the orders-api Service.
+# Requires the Service to carry the prometheus.io/scrape annotation (it does).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: orders-api
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: orders-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

@@ -1,0 +1,47 @@
+# Alerts for the orders API. Each alert links to the runbook section
+# that tells the on-call engineer what to do (docs/runbook.md).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: orders-api-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: orders-api
+      interval: 30s
+      rules:
+        - alert: OrdersApiHighErrorRate
+          expr: |
+            sum(rate(http_requests_total{job="orders-api",status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="orders-api"}[5m])) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "orders-api 5xx error rate above 5% for 5 minutes"
+            runbook_url: "https://github.com/saiannotations/gitops-microservice-delivery/blob/main/docs/runbook.md#high-error-rate"
+
+        - alert: OrdersApiPodsCrashLooping
+          expr: |
+            increase(kube_pod_container_status_restarts_total{container="orders-api"}[15m]) > 3
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "orders-api pods are crash-looping"
+            runbook_url: "https://github.com/saiannotations/gitops-microservice-delivery/blob/main/docs/runbook.md#crashlooping-pods"
+
+        - alert: OrdersApiHighLatency
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(http_request_duration_seconds_bucket{job="orders-api"}[5m])) by (le)
+            ) > 1
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "orders-api p95 latency above 1s for 10 minutes"
+            runbook_url: "https://github.com/saiannotations/gitops-microservice-delivery/blob/main/docs/runbook.md#high-latency"
