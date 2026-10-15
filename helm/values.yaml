@@ -1,0 +1,35 @@
+# Default values for orders-api.
+# Environment-specific files (values-dev/staging/prod.yaml) override these.
+replicaCount: 2
+
+image:
+  repository: ghcr.io/saiannotations/orders-api
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: false
+  className: nginx
+  host: orders.example.com
+  annotations: {}
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+# NOTE: resources intentionally left unset in the first version of the chart.
+# Pods without limits risk OOMKills under load -- tracked as a repo issue.
+resources: {}
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+env: {}

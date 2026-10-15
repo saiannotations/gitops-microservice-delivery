@@ -1,0 +1,13 @@
+orders-api has been deployed to the "{{ .Values.environment }}" environment.
+
+  Image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+  Replicas: {{ .Values.replicaCount }}
+
+Check the rollout:
+
+  kubectl rollout status deployment/{{ include "orders-api.fullname" . }} -n {{ .Release.Namespace }}
+
+Port-forward to try it locally:
+
+  kubectl port-forward svc/{{ include "orders-api.fullname" . }} 8000:80 -n {{ .Release.Namespace }}
+  curl localhost:8000/health
