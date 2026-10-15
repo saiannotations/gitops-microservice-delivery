@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Helm / local tooling
+*.tgz
+
+# Never commit real credentials, even by accident
+.env
+*.pem
+*.key
+secrets/
