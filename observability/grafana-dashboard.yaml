@@ -1,0 +1,54 @@
+# Grafana dashboard for the orders API, shipped as a ConfigMap.
+# The kube-prometheus-stack sidecar picks up ConfigMaps labelled
+# grafana_dashboard=1 and loads the dashboard automatically.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orders-api-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  orders-api.json: |
+    {
+      "title": "orders-api overview",
+      "tags": ["orders-api"],
+      "panels": [
+        {
+          "title": "Request rate",
+          "type": "timeseries",
+          "targets": [
+            { "expr": "sum(rate(http_requests_total{job=\"orders-api\"}[5m]))" }
+          ]
+        },
+        {
+          "title": "5xx error rate",
+          "type": "timeseries",
+          "targets": [
+            { "expr": "sum(rate(http_requests_total{job=\"orders-api\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{job=\"orders-api\"}[5m]))" }
+          ]
+        },
+        {
+          "title": "p95 latency",
+          "type": "timeseries",
+          "targets": [
+            { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"orders-api\"}[5m])) by (le))" }
+          ]
+        },
+        {
+          "title": "Pod restarts",
+          "type": "timeseries",
+          "targets": [
+            { "expr": "sum(increase(kube_pod_container_status_restarts_total{container=\"orders-api\"}[15m]))" }
+          ]
+        },
+        {
+          "title": "CPU / memory vs requests",
+          "type": "timeseries",
+          "targets": [
+            { "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"orders-api\"}[5m]))" },
+            { "expr": "sum(container_memory_working_set_bytes{container=\"orders-api\"})" }
+          ]
+        }
+      ]
+    }
