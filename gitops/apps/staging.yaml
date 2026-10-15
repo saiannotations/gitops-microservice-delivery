@@ -15,4 +15,9 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: orders-staging
-  # NOTE: sync is manual in the first version -- see dev.yaml.
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

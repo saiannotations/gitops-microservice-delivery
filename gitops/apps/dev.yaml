@@ -15,5 +15,9 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: orders-dev
-  # NOTE: sync is manual in the first version. After a chart change the app
-  # can sit OutOfSync until someone clicks Sync -- tracked as a repo issue.
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
